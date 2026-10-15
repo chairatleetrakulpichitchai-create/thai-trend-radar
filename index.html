@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>เรดาร์ขายออนไลน์ไทย</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600&family=Noto+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a "what changed" strip first, then tabbed panels (this year vs next, categories with drill-down, where to sell, regions, calendar, profit). Data lives in one JSON block the weekly job rewrites. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#132029; --ink2:#46545f; --ink3:#6a7681;
+  --line:#dde3e8; --grid:#e9eef2; --accent:#0d6e8a; --accent-hi:#084e63; --accent-soft:#d9eef4;
+  --bad:#b42318; --bad-bg:#fbe7e5; --good:#0f7a4d; --good-bg:#e1f4ea; --warn:#8a5a00; --warn-bg:#fcf0d4;
+  --tt:#c2185b; --sp:#e0561b; --lz:#2f4fd6;
+  --font-display:'Prompt','Noto Sans Thai',system-ui,sans-serif;
+  --font-body:'Noto Sans Thai',system-ui,sans-serif;
+  --font-num:'IBM Plex Mono','Noto Sans Thai',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f161b; --surface:#172129; --ink:#e9f0f4; --ink2:#b4c1ca; --ink3:#8b99a4;
+    --line:#26333d; --grid:#1f2b34; --accent:#3fb0cf; --accent-hi:#7fcde2; --accent-soft:#123540;
+    --bad:#ff8a80; --bad-bg:#3a1714; --good:#4cc790; --good-bg:#12301f; --warn:#e6b450; --warn-bg:#33270c;
+    --tt:#f06292; --sp:#ff8a50; --lz:#7d95ff; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f161b; --surface:#172129; --ink:#e9f0f4; --ink2:#b4c1ca; --ink3:#8b99a4;
+  --line:#26333d; --grid:#1f2b34; --accent:#3fb0cf; --accent-hi:#7fcde2; --accent-soft:#123540;
+  --bad:#ff8a80; --bad-bg:#3a1714; --good:#4cc790; --good-bg:#12301f; --warn:#e6b450; --warn-bg:#33270c;
+  --tt:#f06292; --sp:#ff8a50; --lz:#7d95ff; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;margin:0;text-wrap:balance;line-height:1.3}
+h1{font-size:clamp(22px,4vw,30px)}
+h2{font-size:18px}
+h3{font-size:15px}
+p{margin:0}
+a{color:var(--accent-hi)}
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.sub{color:var(--ink2);max-width:68ch;margin-top:4px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--ink2)}
+.chip b{color:var(--ink);font-weight:500}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--good);flex:none}
+.dot.stale{background:var(--warn)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;min-width:0}
+.head{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.hint{font-size:13px;color:var(--ink3);margin-top:2px}
+.changes{border-left:4px solid var(--accent)}
+.chg{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.chg:first-of-type{border-top:0}
+.chg .tag{font-size:12px;padding:1px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent-hi);white-space:nowrap;height:fit-content}
+.chg.new .tag{background:var(--good-bg);color:var(--good)}
+.chg p{font-size:14px;color:var(--ink2)}
+.chg p b{color:var(--ink);font-weight:500}
+.chg .src{font-size:12.5px;color:var(--ink3)}
+.chg .when{font-size:12px;color:var(--ink3)}
+.more{font:inherit;font-size:13px;background:none;border:1px solid var(--line);color:var(--ink2);border-radius:6px;padding:5px 12px;cursor:pointer;margin-top:10px}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.tabs button{font:inherit;font-size:14px;background:none;border:0;border-bottom:2px solid transparent;color:var(--ink2);padding:8px 12px;cursor:pointer;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:500}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
+.tabp{display:flex;flex-direction:column;gap:18px;min-width:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tile .k{font-size:13px;color:var(--ink2)}
+.tile .v{font-family:var(--font-display);font-size:24px;font-weight:600}
+.tile .n{font-size:12.5px;color:var(--ink3)}
+.yy{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.col{border:1px solid var(--line);border-radius:8px;padding:14px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.col h3{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.col ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink2);display:flex;flex-direction:column;gap:6px}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--grid);color:var(--ink2);white-space:nowrap}
+.pill.up{background:var(--good-bg);color:var(--good)}
+.pill.down{background:var(--bad-bg);color:var(--bad)}
+.pill.flat{background:var(--warn-bg);color:var(--warn)}
+.pill.est{background:var(--accent-soft);color:var(--accent-hi)}
+.srcbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.sbx{border:1px dashed var(--line);border-radius:8px;padding:12px;font-size:14px;color:var(--ink2);min-width:0}
+.sbx .big{font-family:var(--font-display);font-size:19px;color:var(--ink);font-weight:600}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:820px;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--ink2);font-size:13px;white-space:nowrap}
+th button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+td.r,th.r{text-align:right}
+tbody tr.cat{cursor:pointer}
+tbody tr.cat:hover{background:var(--grid)}
+tbody tr.cat[aria-expanded="true"]{background:var(--accent-soft)}
+tr.det td{background:var(--bg);padding:14px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.dgrid h4{margin:0 0 4px;font-family:var(--font-display);font-size:13.5px;font-weight:500;color:var(--ink2)}
+.dgrid p,.dgrid li{font-size:13.5px;color:var(--ink2)}
+.dgrid ol{margin:0;padding-left:18px}
+.go{font:inherit;font-size:13px;background:var(--accent);color:var(--surface);border:0;border-radius:6px;padding:6px 12px;cursor:pointer;margin-top:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;background:transparent;color:var(--ink2);border:0;padding:6px 12px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.bars{display:flex;flex-direction:column;gap:9px}
+.row{display:grid;grid-template-columns:minmax(110px,190px) 1fr minmax(84px,auto);align-items:center;gap:12px}
+.row .name{font-size:14px;min-width:0}
+.track{height:20px;background:var(--grid);border-radius:3px;position:relative;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:0 3px 3px 0;min-width:2px}
+.fill.b{position:absolute;top:0;left:0;background:var(--accent-soft);border-right:2px solid var(--accent)}
+.row .val{font-family:var(--font-num);font-size:13px;text-align:right}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink3);margin-top:10px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.stack{display:flex;height:28px;border-radius:4px;overflow:hidden}
+.stack span{display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:500;min-width:0;white-space:nowrap;overflow:hidden}
+.shares{display:flex;flex-direction:column;gap:12px}
+.shares .lab{font-size:13px;color:var(--ink2);margin-bottom:4px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card h3{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card p{color:var(--ink2);font-size:14px}
+.card .src{font-size:12.5px;color:var(--ink3)}
+.items{display:flex;flex-wrap:wrap;gap:6px}
+.items span{font-size:12.5px;padding:2px 8px;border-radius:4px;background:var(--grid);color:var(--ink2)}
+.note{font-size:13px;color:var(--ink2);background:var(--warn-bg);border-radius:6px;padding:10px 12px}
+.ev{display:grid;grid-template-columns:96px 1fr auto;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);align-items:start}
+.ev:last-child{border-bottom:0}
+.ev .d{font-family:var(--font-display);font-weight:600}
+.ev .d small{display:block;font-family:var(--font-body);font-weight:400;color:var(--ink3);font-size:12px}
+.ev p{color:var(--ink2);font-size:14px}
+.ev .src{font-size:12px;color:var(--ink3)}
+.ev.auto .d{color:var(--ink2)}
+.calc input,.calc select{font:inherit;font-size:14px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%;min-width:0;font-variant-numeric:tabular-nums}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink2)}
+table.fee{min-width:960px}
+table.fee td input{width:76px;text-align:right}
+.neg{color:var(--bad);font-weight:500}
+.pos{color:var(--good);font-weight:500}
+.sm{font-size:13px;color:var(--ink2);max-width:78ch}
+.srcs{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--ink2);columns:2 320px;column-gap:28px}
+.srcs li{break-inside:avoid;margin-bottom:4px}
+@media (max-width:540px){
+  .ev{grid-template-columns:1fr auto}.ev .d{grid-column:1/-1}
+  .row{grid-template-columns:1fr auto;grid-template-areas:"n v" "t t";gap:4px 12px}
+  .row .name{grid-area:n}.row .val{grid-area:v}.row .track{grid-area:t}
+  .chg{grid-template-columns:1fr}
+}
+</style>
+
+<script type="application/json" id="trend-data">
+{
+ "meta":{"updated":"2026-10-15","checked":"2026-10-15","usdThb":33.52,"usdThbDate":"2026-10-12","ecdbMonth":"2026-09"},
+ "changes":[
+  {"date":"2026-10-15","tag":"ตัวเลขใหม่","text":"<b>ECDB ออกยอดเดือนกันยายน 2026 แล้ว</b> ตลาดรวม US$2,860m ลดจากเดือนสิงหาคมเล็กน้อย และทุกหมวดที่ติดตามลดลงจากเดือนก่อนหน้าเหมือนกัน เป็นช่วงรอยต่อก่อนแคมเปญ 11.11","src":"ECDB"},
+  {"date":"2026-10-15","tag":"ค่าธรรมเนียม","text":"<b>TikTok Shop ขึ้นค่าธรรมเนียมตั้งแต่ 5 ก.ค. 2026</b> ร้านทั่วไปเป็น 6.42–11.77% และ Growth Fee 6.96–8.03% (เพดาน 199 บาท/ชิ้น) สูงกว่าตัวเลขในหน้าเดิมมาก ส่วน Shopee ขึ้นรอบที่ 3 ของปีเมื่อ 4 ส.ค. (ร้านทั่วไปสูงสุด 17.12%) และ Lazada ขึ้นเมื่อ 1 ส.ค. (Marketplace สูงสุด 17.12%)","src":"รวมค่าธรรมเนียม 2569, Workpoint Today, ประชาชาติธุรกิจ"},
+  {"date":"2026-10-15","tag":"แพลตฟอร์ม","text":"<b>TikTok Shop ขึ้นเป็นอันดับ 2 ในหลายหมวด</b> ตามการจัดอันดับล่าสุดของ ECDB (แฟชั่น ความงาม บ้าน สุขภาพ ของเล่น กีฬา เครื่องดื่ม) และนำหมวดกระเป๋าและเครื่องประดับ ส่วนหมวดอาหารและความงาม ECDB ล่าสุดจัด Shopee เป็นอันดับ 1 ต่างจากหน้าเดิม","src":"ECDB"},
+  {"date":"2026-10-15","tag":"ภาพรวม","text":"<b>ไทยโตเร็วสุดในอาเซียนปี 2025</b> มูลค่าซื้อขายบนแพลตฟอร์มโต 52% เป็น 1.14 ล้านล้านบาท แบ่งเป็น Shopee 50% TikTok Shop 32% Lazada 18% ขณะที่ Priceza คาดว่าตลาดรวมปี 2026 จะโตช้าลงเหลือราว 5–6%","src":"Momentum Works ผ่าน Marketeer, The Story Thailand"},
+  {"date":"2026-10-15","tag":"หมวดใหม่","text":"<b>เพิ่ม 5 หมวดที่ติดตาม</b> สัตว์เลี้ยง ของเล่น อุปกรณ์กีฬา เครื่องดื่ม และของใช้ทำความสะอาดบ้าน เครื่องดื่มโต 20–25% ในปี 2026 ใกล้เคียงหมวดอาหาร","src":"ECDB"},
+  {"date":"2026-10-15","tag":"ภูมิภาค","text":"<b>พาณิชย์จังหวัดอุบลราชธานีเผยแพร่รายการสินค้ายอดนิยมเดือนสิงหาคม 2569</b> เมื่อ 3 ก.ย. เพิ่มในแท็บภูมิภาคแล้ว","src":"สำนักงานพาณิชย์จังหวัดอุบลราชธานี"}
+ ],
+ "market":{
+  "ecdbRev25":32476,"ecdbG25":[10,15],"ecdbG26":[10,15],"ecdbOnline25":"10–15%",
+  "monthly":[{"m":"2026-04","v":2894},{"m":"2026-09","v":2860}],
+  "pricezaThb25":"เกิน 1 ล้านล้านบาท (+7.6%)","pricezaG26":"+5–6% แตะ 1.1–1.2 ล้านล้านบาท",
+  "mwPlatformThb25":"1.14 ล้านล้านบาท (+52%)"
+ },
+ "categories":[
+  {"id":"el","th":"อิเล็กทรอนิกส์","en":"Electronics","rev":7835,"g25":[5,10],"g26":[5,10],"sep":667,"hist":[{"m":"2026-04","v":661},{"m":"2026-09","v":667}],"on25":"20–25%","on26":"25–30%","sub":"อุปกรณ์อิเล็กทรอนิกส์ผู้บริโภค","subPct":69,"stores":["Shopee","Lazada","TikTok Shop"],"slug":"electronics"},
+  {"id":"fa","th":"แฟชั่น","en":"Fashion","rev":6309,"g25":[5,10],"g26":[5,10],"sep":537,"hist":[{"m":"2026-06","v":556},{"m":"2026-09","v":537}],"on25":"10–15%","on26":"10–15%","sub":"เสื้อผ้า","subPct":53,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"fashion"},
+  {"id":"hm","th":"เฟอร์นิเจอร์และของใช้ในบ้าน","en":"Furniture & homeware","rev":2484,"g25":[10,15],"g26":[10,15],"sep":218,"hist":[{"m":"2026-09","v":218}],"on25":"15–20%","on26":"20–25%","sub":"ของใช้ในบ้าน","subPct":59,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"furniture"},
+  {"id":"cp","th":"ความงามและของใช้ส่วนตัว","en":"Care products","rev":2406,"g25":[10,15],"g26":[5,10],"sep":211,"hist":[{"m":"2026-06","v":219},{"m":"2026-09","v":211}],"on25":"15–20%","on26":"15–20%","sub":"ของใช้ส่วนตัว","subPct":59,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"care-products"},
+  {"id":"fo","th":"อาหาร","en":"Food","rev":2262,"g25":[20,25],"g26":[20,25],"sep":226,"hist":[{"m":"2026-05","v":240},{"m":"2026-09","v":226}],"on25":"0–5%","on26":"0–5%","sub":"อาหารสด","subPct":51,"stores":["Shopee","Lazada","TikTok Shop"],"slug":"food"},
+  {"id":"sh","th":"รองเท้า","en":"Footwear","rev":1637,"g25":[5,10],"g26":[5,10],"sep":139,"hist":[{"m":"2026-09","v":139}],"on25":"15–20%","on26":"15–20%","sub":"รองเท้ากีฬา","subPct":35,"stores":["Shopee","Lazada","TikTok Shop"],"slug":"footwear"},
+  {"id":"ba","th":"กระเป๋าและเครื่องประดับ","en":"Bags & accessories","rev":1332,"g25":[5,10],"g26":[5,10],"sep":112,"hist":[{"m":"2026-06","v":116},{"m":"2026-09","v":112}],"on25":"20–25%","on26":"20–25%","sub":"เครื่องประดับและนาฬิกา","subPct":39,"stores":["TikTok Shop","Shopee","Lazada"],"slug":"bags-accessories"},
+  {"id":"sp","th":"อุปกรณ์กีฬา","en":"Sports equipment","rev":1000,"g25":[10,15],"g26":[10,15],"sep":90,"hist":[{"m":"2026-09","v":90}],"on25":"10–15%","on26":"10–15%","sub":"กีฬาประเภทบุคคล","subPct":60,"stores":["Shopee","TikTok Shop","Supersports"],"slug":"sports-equipment"},
+  {"id":"bv","th":"เครื่องดื่ม","en":"Beverages","rev":819,"g25":[25,30],"g26":[20,25],"sep":82,"hist":[{"m":"2026-09","v":82}],"on25":"0–5%","on26":"0–5%","sub":"เครื่องดื่มไม่มีแอลกอฮอล์","subPct":100,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"beverages"},
+  {"id":"hc","th":"สุขภาพและยา","en":"Health care","rev":722,"g25":[10,15],"g26":[5,10],"sep":64,"hist":[{"m":"2026-07","v":66},{"m":"2026-09","v":64}],"on25":"15–20%","on26":"15–20%","sub":"ยา","subPct":33,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"health-care"},
+  {"id":"ty","th":"ของเล่น","en":"Toys","rev":643,"g25":[10,15],"g26":[10,15],"sep":57,"hist":[{"m":"2026-09","v":57}],"on25":"20–25%","on26":"25–30%","sub":"","subPct":null,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"toys"},
+  {"id":"pt","th":"สัตว์เลี้ยง","en":"Pet supplies","rev":630,"g25":[10,15],"g26":[10,15],"sep":58,"hist":[{"m":"2026-09","v":58}],"on25":"0–5%","on26":"0–5%","sub":"อุปกรณ์สำหรับแมว","subPct":46,"stores":["Shopee","Lazada","TikTok Shop"],"slug":"pet-supplies"},
+  {"id":"ga","th":"สวนและกลางแจ้ง","en":"Garden","rev":499,"g25":[10,15],"g26":[5,10],"sep":42,"hist":[{"m":"2026-06","v":46},{"m":"2026-09","v":42}],"on25":"0–5%","on26":"0–5%","sub":"เตาย่าง/บาร์บีคิว","subPct":42,"stores":["Shopee","Lazada","Homepro"],"slug":"garden"},
+  {"id":"hh","th":"ของใช้ทำความสะอาดบ้าน","en":"Household care","rev":259,"g25":[10,15],"g26":[5,10],"sep":25,"hist":[{"m":"2026-09","v":25}],"on25":"10–15%","on26":"10–15%","sub":"อุปกรณ์ทำความสะอาด","subPct":48,"stores":["Shopee","TikTok Shop","Lazada"],"slug":"household-care"},
+  {"id":"fl","th":"ดอกไม้และของขวัญ","en":"Flowers & gifts","rev":203,"g25":[10,15],"g26":[10,15],"sep":17,"hist":[{"m":"2026-07","v":18},{"m":"2026-09","v":17}],"on25":"5–10%","on26":"5–10%","sub":"","subPct":null,"stores":["Shopee","Central","Loveyouflower"],"slug":"flowers-gifts"}
+ ],
+ "platforms":{
+  "share":[
+   {"label":"ส่วนแบ่งมูลค่าซื้อขายในไทย ปี 2025 (Momentum Works)","sp":50,"tt":32,"lz":18},
+   {"label":"ส่วนแบ่งครึ่งแรกปี 2025 (Cube ผ่าน Bangkok Post)","sp":48,"tt":33,"lz":18},
+   {"label":"แพลตฟอร์มที่คนไทยใช้เป็นหลัก (สำรวจ Trends Digital 2026)","sp":63,"tt":21,"lz":16}
+  ],
+  "revenue":"รายได้ปี 2025 ในไทย: Shopee 88.3 พันล้านบาท (+76%) TikTok Shop 54.4 พันล้านบาท (+350%) Lazada 30 พันล้านบาท (+6.6%)",
+  "fees":[
+   {"p":"Shopee","eff":"4 ส.ค. 2026","comm":"ร้านทั่วไปสูงสุด 17.12% · Mall สูงสุด 19.26%","pay":"3.21%","other":"1.07 บาท/ออเดอร์ · ค่าบริการเพิ่มถ้าร่วมโปรแกรมส่งฟรี/คูปอง","note":"ขึ้นเป็นครั้งที่ 3 ของปี"},
+   {"p":"Lazada","eff":"1 ส.ค. 2026","comm":"Marketplace สูงสุด 17.12% · LazMall สูงสุด 18.73%","pay":"3.21%","other":"Premium Package 8.56% · โปรแกรมส่งฟรีพิเศษ 6.42% · ไม่มีค่าต่อออเดอร์","note":"คิดค่าธรรมเนียมแยกตามหมวด"},
+   {"p":"TikTok Shop","eff":"5 ก.ค. 2026","comm":"ร้านทั่วไป 6.42–11.77% · Mall 5.35–13.91%","pay":"3.21%","other":"Growth Fee 6.96–8.03% (เพดาน 199 บาท/ชิ้น) · 1.07 บาท/ออเดอร์ สำหรับร้านที่ขายเกิน 100 ชิ้นใน 30 วัน","note":"ค่าคอมต่ำสุด แต่รวม Growth Fee แล้วใกล้เคียงเจ้าอื่น"}
+  ]
+ },
+ "regions":[
+  {"prov":"มุกดาหาร","region":"อีสาน","month":"ม.ค. 2569","url":"https://mukdahan.moc.go.th/th/content/category/detail/id/4724/iid/146467","items":{"Lazada":["น้ำปลาเวียดนาม","มีดซอยผักบุ้ง","น้ำหอม Miss & Kiss","หม้อนึ่ง","ถาดเคลือบลายดอก","แผ่นปอเปี๊ยะทอด"],"Shopee":["แป้งฟิตมี","เส้นก๋วยจั๊บเวียดนาม","เข็มกลัดผีเสื้อ","ก๋วยจั๊บเวียดนามสำเร็จรูป","ซุปหม่าล่าเสฉวน","ยาอมมายบาซิน"],"TikTok Shop":["บิสกิตแท่ง","หนังเค็มจี่","แคนตาลูปไข่มุก","ข้าวเปียกเส้น","กะปิเวียดนาม"]},"note":"จังหวัดชายแดนติดลาว สินค้าอาหารสไตล์เวียดนามและของกินพื้นถิ่นติดอันดับหลายรายการ"},
+  {"prov":"อุบลราชธานี","region":"อีสาน","month":"ส.ค. 2569","url":"https://ubonratchathani.moc.go.th/th/content/category/detail/id/161/iid/184448","items":null,"note":"เผยแพร่เป็นไฟล์ PDF เมื่อ 3 ก.ย. 2569 (มีฉบับ พ.ค. และ ก.ค. 2569 ด้วย) งานอัปเดตจะพยายามอ่านรายการสินค้าจากไฟล์"},
+  {"prov":"อุดรธานี","region":"อีสาน","month":"ม.ค. 2569","url":"https://udonthani.moc.go.th/th/content/category/detail/id/4846/iid/145379","items":null,"note":"เผยแพร่เป็นไฟล์ PDF"},
+  {"prov":"ชัยภูมิ","region":"อีสาน","month":"ส.ค. 2569","url":"https://chaiyaphum.moc.go.th/th/content/category/index/id/4771","items":null,"note":"เผยแพร่ 31 ส.ค. 2569"},
+  {"prov":"บึงกาฬ","region":"อีสาน","month":"ส.ค. 2569","url":"https://buengkan.moc.go.th/th/page/item/index/id/25","items":null,"note":"มีรายการประจำเดือน ส.ค. 2569"},
+  {"prov":"เชียงราย","region":"เหนือ","month":"มิ.ย. 2569","url":"https://chiangrai.moc.go.th/th/content/category/index/id/4796","items":null,"note":"เผยแพร่ 1 ก.ค. 2569"},
+  {"prov":"ปทุมธานี","region":"กลาง","month":"ม.ค. 2569","url":"https://pathumthani.moc.go.th/th/content/category/detail/id/161/iid/144799","items":null,"note":"เผยแพร่เป็นไฟล์ PDF"}
+ ],
+ "events":[
+  {"d":"2026-10-10","end":"2026-10-18","t":"เทศกาลกินเจ","x":"พาณิชย์จังหวัดหลายแห่งจัดกิจกรรมส่งเสริมอาหารเจ ช่วงนี้อาหารเจสำเร็จรูปและวัตถุดิบเจขายดี","s":"สำนักงานพาณิชย์จังหวัดเชียงราย"},
+  {"d":"2026-11-11","t":"11.11","x":"แคมเปญใหญ่สุดของปีบนทั้ง 3 แพลตฟอร์ม ลดลึก คูปองหลายชั้น สินค้าราคาสูงขายดี ควรสต็อกและลงทะเบียนแคมเปญล่วงหน้า","s":"BigSeller, Mega Digital"},
+  {"d":"2026-12-12","t":"12.12","x":"แคมเปญปลายปี ของขวัญและเครื่องประดับขายต่อเนื่องถึงคริสต์มาสและปีใหม่","s":"BigSeller, DHL"},
+  {"d":"2026-12-25","t":"คริสต์มาส","x":"ช่วงซื้อของขวัญ ต่อเนื่องจาก 12.12","s":"DHL"},
+  {"d":"2027-01-01","t":"ปีใหม่ และแคมเปญ 1.1","x":"ของขวัญปีใหม่ กระเช้า และแคมเปญเลขคู่แรกของปี","s":"รูปแบบแคมเปญปีก่อน"},
+  {"d":"2027-02-06","t":"ตรุษจีน","x":"ของไหว้ ของขวัญ และเสื้อผ้าสีแดง","s":"ปฏิทินจันทรคติ"},
+  {"d":"2027-02-14","t":"วาเลนไทน์","x":"ดอกไม้ ของขวัญ เครื่องประดับ น้ำหอม","s":"ปฏิทิน"}
+ ]
+}
+</script>
+
+<div class="wrap">
+  <header>
+    <h1>เรดาร์ขายออนไลน์ไทย</h1>
+    <p class="sub">ดูว่าตลาดออนไลน์ไทยเปลี่ยนไปอย่างไร ปีนี้กับปีหน้าต่างกันแค่ไหน และสินค้าแบบไหนน่าขายบนแพลตฟอร์มไหน อัปเดตอัตโนมัติทุกสัปดาห์เมื่อมีข้อมูลใหม่</p>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <section class="panel changes" aria-labelledby="ch1">
+    <div class="head"><div><h2 id="ch1">มีอะไรเปลี่ยน</h2><p class="hint" id="chhint"></p></div></div>
+    <div id="chlist"></div>
+    <button type="button" class="more" id="chmore" hidden>ดูทั้งหมด</button>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="เลือกหัวข้อ">
+    <button type="button" role="tab" data-t="year" aria-selected="true">ปีนี้กับปีหน้า</button>
+    <button type="button" role="tab" data-t="cats" aria-selected="false">หมวดสินค้า</button>
+    <button type="button" role="tab" data-t="where" aria-selected="false">ขายที่ไหน</button>
+    <button type="button" role="tab" data-t="region" aria-selected="false">ภูมิภาค</button>
+    <button type="button" role="tab" data-t="cal" aria-selected="false">ปฏิทิน</button>
+    <button type="button" role="tab" data-t="profit" aria-selected="false">คิดกำไร</button>
+  </nav>
+
+  <!-- YEAR -->
+  <div class="tabp" id="p-year">
+    <section class="tiles" id="tiles" aria-label="ตัวเลขหลัก"></section>
+
+    <section class="panel" aria-labelledby="y1">
+      <div class="head"><div><h2 id="y1">ขนาดตลาด: แต่ละแหล่งนับไม่เหมือนกัน</h2><p class="hint">ตัวเลขต่างกันเพราะนิยามต่างกัน ใช้ดูทิศทางมากกว่าตัวเลขเป๊ะ</p></div></div>
+      <div class="srcbox" id="mktsrc"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="y2">
+      <div class="head">
+        <div><h2 id="y2">ปี 2025 → 2026 → 2027 รายหมวด</h2><p class="hint" id="yhint"></p></div>
+        <div class="seg" role="group" aria-label="เลือกมุมมอง">
+          <button type="button" data-v="size" aria-pressed="true">ขนาด (ล้านบาท)</button>
+          <button type="button" data-v="growth" aria-pressed="false">อัตราโต</button>
+        </div>
+      </div>
+      <div class="bars" id="ybars"></div>
+      <div class="legend" id="ylegend"></div>
+    </section>
+
+    <section class="yy" aria-label="สรุปปีนี้และปีหน้า">
+      <div class="col"><h3>ปีนี้ 2026 <span class="pill">จากข้อมูลจริงถึง ก.ย.</span></h3><ul id="thisyear"></ul></div>
+      <div class="col"><h3>ปีหน้า 2027 <span class="pill est">คาดการณ์</span></h3><ul id="nextyear"></ul></div>
+    </section>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="tabp" id="p-cats" hidden>
+    <section class="panel" aria-labelledby="c1">
+      <div class="head"><div><h2 id="c1">ทุกหมวดที่ติดตาม</h2><p class="hint">กดแถวเพื่อดูรายละเอียดของหมวดนั้น กดหัวคอลัมน์เพื่อเรียง</p></div></div>
+      <div class="scroll"><table id="ctbl"></table></div>
+      <p class="sm" style="margin-top:12px">"แนวโน้ม" เทียบอัตราโตปี 2025 กับที่คาดไว้ปี 2026 ถ้าช่วงคาดการณ์ต่ำลงแปลว่ากำลังชะลอ "ยอดเดือนล่าสุด" มีผลของฤดูกาลปนอยู่ ใช้ดูทิศทางคร่าวๆ</p>
+    </section>
+  </div>
+
+  <!-- WHERE -->
+  <div class="tabp" id="p-where" hidden>
+    <section class="panel" aria-labelledby="w1">
+      <div class="head"><div><h2 id="w1">ใครครองตลาดไทย</h2><p class="hint" id="revline"></p></div></div>
+      <div class="shares" id="shares"></div>
+      <div class="legend"><span><i style="background:var(--sp)"></i>Shopee</span><span><i style="background:var(--tt)"></i>TikTok Shop</span><span><i style="background:var(--lz)"></i>Lazada</span></div>
+    </section>
+    <section class="panel" aria-labelledby="w2">
+      <div class="head"><div><h2 id="w2">หมวดไหนเหมาะกับแพลตฟอร์มไหน</h2><p class="hint">อันดับร้านค้าตามมูลค่าซื้อขายจาก ECDB ล่าสุด พร้อมข้อสังเกตของผม</p></div></div>
+      <div class="cols" id="fit"></div>
+    </section>
+    <section class="panel" aria-labelledby="w3">
+      <div class="head"><div><h2 id="w3">ค่าธรรมเนียมล่าสุด</h2><p class="hint">รวม VAT 7% · อัตราจริงต่างกันตามหมวดสินค้าและโปรแกรมที่ร้านเข้าร่วม</p></div></div>
+      <div class="scroll"><table id="ftbl"></table></div>
+      <p class="note" style="margin-top:12px">ปี 2026 Shopee ขึ้นค่าธรรมเนียม 3 ครั้ง และ TikTok Shop 2 ครั้ง ตามแนวทางของ กขค. และ ETDA แพลตฟอร์มต้องแจ้งผู้ขายล่วงหน้าอย่างน้อย 30 วันก่อนขึ้นค่าธรรมเนียม ควรเช็คประกาศใน Seller Centre เป็นระยะ</p>
+    </section>
+  </div>
+
+  <!-- REGION -->
+  <div class="tabp" id="p-region" hidden>
+    <section class="panel" aria-labelledby="r1">
+      <div class="head"><div><h2 id="r1">สินค้ายอดนิยมรายจังหวัด</h2><p class="hint">สำนักงานพาณิชย์จังหวัดหลายแห่งรวบรวมสินค้าขายดีบนแพลตฟอร์มออนไลน์ทุกเดือน ตัวเลขยอดขายรายภาคที่เปิดเผยฟรียังมีน้อย</p></div></div>
+      <div class="cols" id="regions"></div>
+    </section>
+    <section class="panel" aria-labelledby="r2">
+      <div class="head"><div><h2 id="r2">ข้อสังเกตเรื่องขายต่างจังหวัด</h2></div></div>
+      <div class="cols">
+        <div class="card"><h3>เก็บเงินปลายทางยังสำคัญนอกเมือง <span class="pill">ข้อมูล 2025–2026</span></h3><p>การจ่ายปลายทางเหลือราว 10% ของธุรกรรมออนไลน์ทั้งประเทศ แต่ยังใช้มากกับออเดอร์นอกกรุงเทพและเมืองใหญ่ ถ้าขายต่างจังหวัดควรเปิดตัวเลือกนี้ไว้</p><p class="src">ที่มา: EasySell</p></div>
+        <div class="card"><h3>ขนส่งผูกกับแพลตฟอร์ม <span class="pill">ครึ่งแรก 2025</span></h3><p>J&amp;T ครองส่วนแบ่งขนส่งพัสดุอันดับ 1 ที่ 33% (งานส่วนใหญ่มาจาก TikTok) ตามด้วย SPX ของ Shopee 28% ผู้ขายแทบเลือกขนส่งเองไม่ได้ ค่าส่งไปจังหวัดไกลจึงขึ้นกับโปรแกรมของแพลตฟอร์ม</p><p class="src">ที่มา: The Story Thailand</p></div>
+        <div class="card"><h3>สินค้าพื้นถิ่นขายข้ามภาคได้ <span class="pill flat">ข้อมูลเก่า</span></h3><p>งานวิจัยของธนาคารแห่งประเทศไทยพบว่าผู้ขายต่างจังหวัดได้ประโยชน์จากการขายออนไลน์มากกว่าผู้ขายในกรุงเทพ เพราะส่งสินค้าข้ามภาคได้ รายการของมุกดาหารที่มีของกินพื้นถิ่นติดอันดับก็สอดคล้องกัน</p><p class="src">ที่มา: ธนาคารแห่งประเทศไทย (2563), พาณิชย์จังหวัดมุกดาหาร</p></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="tabp" id="p-cal" hidden>
+    <section class="panel" aria-labelledby="k1">
+      <div class="head"><div><h2 id="k1">ปฏิทินขาย 90 วันข้างหน้า</h2><p class="hint">นับถอยหลังจากวันที่เปิดหน้านี้ · รวมวันเงินเดือนออก (25) และวันเลขคู่ที่แพลตฟอร์มจัดโปรเกือบทุกเดือน</p></div></div>
+      <div id="cal"></div>
+      <p class="note" style="margin-top:12px">วันเลขคู่และวันเงินเดือนออกคำนวณให้อัตโนมัติจากรูปแบบที่แพลตฟอร์มจัดทุกเดือน ไม่ใช่ประกาศทางการ วันลงทะเบียนแคมเปญจริงให้ดูใน Seller Centre</p>
+    </section>
+  </div>
+
+  <!-- PROFIT -->
+  <div class="tabp" id="p-profit" hidden>
+    <section class="panel calc" aria-labelledby="pf1">
+      <div class="head"><div><h2 id="pf1">คิดกำไรต่อชิ้น</h2><p class="hint">ค่าเริ่มต้นเป็นตัวอย่าง ช่องค่าธรรมเนียมใส่ค่าสูงสุดของร้านทั่วไปตามอัตราล่าสุด แล้วปรับให้ตรงหมวดของคุณ</p></div></div>
+      <div class="fields">
+        <label for="f-price">ราคาขาย (บาท)<input id="f-price" type="number" inputmode="decimal" min="0" step="1" value="299"></label>
+        <label for="f-cost">ต้นทุนสินค้า (บาท)<input id="f-cost" type="number" inputmode="decimal" min="0" step="1" value="120"></label>
+        <label for="f-ship">ค่าส่ง+แพ็กที่ร้านออก (บาท)<input id="f-ship" type="number" inputmode="decimal" min="0" step="1" value="15"></label>
+        <label for="f-ads">ค่าโฆษณา (% ของราคา)<input id="f-ads" type="number" inputmode="decimal" min="0" step="0.5" value="10"></label>
+        <label for="f-tm">กำไรเป้าหมาย (% ของราคา)<input id="f-tm" type="number" inputmode="decimal" min="0" max="90" step="1" value="20"></label>
+      </div>
+      <div class="scroll"><table class="fee" id="fee"></table></div>
+      <p class="sm" style="margin-top:12px">ค่าเริ่มต้น: TikTok Shop ค่าคอมมิชชัน 11.77% และ Growth Fee 8.03% (เพดาน 199 บาท) Shopee และ Lazada ค่าคอมมิชชัน 17.12% ทั้งหมดเป็นค่าสูงสุดของร้านทั่วไป ไม่รวมภาษีเงินได้และสินค้าคืน "ราคาที่ต้องตั้ง" คือราคาต่ำสุดที่ได้กำไรตามเป้า</p>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="s1">
+    <h2 id="s1">ที่มาและวิธีอัปเดต</h2>
+    <p class="hint" style="margin-top:6px;max-width:75ch">ทุกสัปดาห์ Claude จะเช็คแหล่งข้อมูลด้านล่าง ถ้ามีตัวเลขหรือประกาศใหม่จะอัปเดตหน้านี้และเพิ่มรายการใน "มีอะไรเปลี่ยน" ถ้าไม่มีอะไรใหม่จะอัปเดตแค่วันที่ตรวจล่าสุด ตัวเลขรายหมวดของ ECDB เป็นการประมาณการและแสดงเป็นช่วง กราฟใช้ค่ากลางของช่วง ตัวเลขปี 2027 เป็นการประมาณของผมโดยต่ออัตราโตปี 2026 ไปอีกหนึ่งปี ไม่ใช่ตัวเลขจากแหล่งข้อมูล</p>
+    <ul class="srcs">
+      <li><a href="https://ecdb.com/resources/sample-data/market/th/all" target="_blank" rel="noopener">ECDB: E-Commerce Industry in Thailand</a> และหน้าหมวดย่อยทั้ง 15 หมวด</li>
+      <li><a href="https://marketeeronline.co/archives/466324" target="_blank" rel="noopener">Marketeer: สรุปรายงาน Momentum Works 2026</a></li>
+      <li><a href="https://www.thestorythailand.com/e-commerce-battleground/" target="_blank" rel="noopener">The Story Thailand: สมรภูมิอีคอมเมิร์ซ 1.2 ล้านล้าน</a></li>
+      <li><a href="https://www.bangkokpost.com/business/general/3276269/tiktok-shop-flexes-muscle-in-3way-thailand-tussle" target="_blank" rel="noopener">Bangkok Post: TikTok Shop flexes muscle in 3-way Thailand tussle</a></li>
+      <li><a href="https://cloutmediaagency.com/en/blogs/social-commerce-thailand-2026" target="_blank" rel="noopener">Clout Media: Social Commerce in Thailand 2026</a></li>
+      <li><a href="https://www.trendsdigital.com/post/online-shopping-trends-thailand-2026" target="_blank" rel="noopener">Trends Digital: Online Shopping Trends in Thailand 2026</a></li>
+      <li><a href="https://xn--22c0bi7bg1c6bc4a8hzb6be.com/fee-updates" target="_blank" rel="noopener">อัปเดตค่าธรรมเนียม Shopee Lazada TikTok Shop 2569</a></li>
+      <li><a href="https://www.workpointtoday.com/business-online-platform-808726-2" target="_blank" rel="noopener">Workpoint Today: Shopee ขึ้นค่าธรรมเนียม 3 ครั้ง</a></li>
+      <li><a href="https://www.prachachat.net/tech/news-2048471" target="_blank" rel="noopener">ประชาชาติธุรกิจ: ค่าธรรมเนียม Shopee-Lazada ล่าสุด</a></li>
+      <li><a href="https://www.afterfee.com/guides/%E0%B8%84%E0%B9%88%E0%B8%B2%E0%B8%98%E0%B8%A3%E0%B8%A3%E0%B8%A1%E0%B9%80%E0%B8%99%E0%B8%B5%E0%B8%A2%E0%B8%A1-lazada-%E0%B8%82%E0%B8%B6%E0%B9%89%E0%B8%99-2569" target="_blank" rel="noopener">AfterFee: ค่าธรรมเนียม Lazada ขึ้น 1 ส.ค. 2569</a></li>
+      <li><a href="https://easysellapp.com/blogs/wiki/thailand-ecommerce-cod-shopify-market-entry-2026" target="_blank" rel="noopener">EasySell: Thailand COD 2026</a></li>
+      <li><a href="https://www.pptvhd36.com/wealth/information/exchange-rate" target="_blank" rel="noopener">PPTV: อัตราแลกเปลี่ยน</a></li>
+      <li>สำนักงานพาณิชย์จังหวัด: มุกดาหาร อุบลราชธานี อุดรธานี ชัยภูมิ บึงกาฬ เชียงราย ปทุมธานี (ลิงก์ในแท็บภูมิภาค)</li>
+      <li><a href="https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/discussion-paper-and-policy-paper/dp202001-01-ECommerce_paper.pdf" target="_blank" rel="noopener">ธนาคารแห่งประเทศไทย: ผลกระทบของอีคอมเมิร์ซ</a></li>
+      <li>BigSeller, DHL, Mega Digital: ปฏิทินแคมเปญ</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('trend-data').textContent);
+var RATE=D.meta.usdThb;
+var TM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function pd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+(p[2]||1))}
+function thDate(s){var d=pd(s);return d.getDate()+' '+TM[d.getMonth()]+' '+(d.getFullYear()+543)}
+function thMonth(s){var d=pd(s);return TM[d.getMonth()]+' '+(d.getFullYear()+543)}
+function mid(g){return (g[0]+g[1])/2}
+function fmt(n,dp){return n.toLocaleString('en-US',{maximumFractionDigits:dp||0,minimumFractionDigits:dp||0})}
+function thbM(usdM){return usdM*RATE} // million baht
+function bigBaht(mb){return mb>=1e6?fmt(mb/1e6,2)+' ล้านล้านบาท':fmt(mb/1000,1)+' พันล้านบาท'}
+function rng(g){return g[0]+'–'+g[1]+'%'}
+var today=new Date();today=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+
+/* derived */
+D.categories.forEach(function(c){
+  c.m26=mid(c.g26);c.m25=mid(c.g25);
+  c.e26=c.rev*(1+c.m26/100);c.e27=c.e26*(1+c.m26/100);
+  c.trend=c.m26>c.m25?'up':(c.m26<c.m25?'down':'flat');
+  var h=c.hist;c.chg=h.length>1?(h[h.length-1].v/h[0].v-1)*100:null;
+});
+
+/* meta chips */
+(function(){
+  var age=Math.round((today-pd(D.meta.checked))/86400000);
+  var el=document.getElementById('meta');
+  el.innerHTML='<span class="chip"><span class="dot'+(age>9?' stale':'')+'"></span>ตรวจล่าสุด <b>'+thDate(D.meta.checked)+'</b></span>'+
+   '<span class="chip">ข้อมูลเปลี่ยนล่าสุด <b>'+thDate(D.meta.updated)+'</b></span>'+
+   '<span class="chip">ยอดรายเดือนถึง <b>'+thMonth(D.meta.ecdbMonth)+'</b></span>'+
+   '<span class="chip">1 US$ = <b class="num">'+RATE.toFixed(2)+'</b> บาท ('+thDate(D.meta.usdThbDate)+')</span>';
+})();
+
+/* changes with "since your last visit" */
+(function(){
+  var last=null;try{last=localStorage.getItem('radar-last-visit')}catch(e){}
+  var list=D.changes.slice().sort(function(a,b){return a.date<b.date?1:-1});
+  var el=document.getElementById('chlist'),more=document.getElementById('chmore');
+  var newCount=0,expanded=false;
+  function draw(){
+    var show=expanded?list:list.slice(0,6);
+    el.innerHTML=show.map(function(c){
+      var isNew=last&&c.date>last;if(isNew)newCount++;
+      return '<div class="chg'+(isNew?' new':'')+'"><span class="tag">'+(isNew?'ใหม่ · ':'')+esc(c.tag)+'</span><div><p>'+c.text+'</p><p class="src">'+thDate(c.date)+' · ที่มา: '+esc(c.src)+'</p></div></div>';
+    }).join('');
+    more.hidden=list.length<=6;more.textContent=expanded?'ย่อ':'ดูทั้งหมด '+list.length+' รายการ';
+  }
+  draw();
+  var h=document.getElementById('chhint');
+  var age=Math.round((today-pd(D.meta.updated))/86400000);
+  if(!last)h.textContent='สรุปสิ่งที่เปลี่ยนล่าสุด ครั้งต่อไปที่เปิดหน้านี้ รายการที่ใหม่กว่าการเข้ามาครั้งก่อนจะมีป้าย "ใหม่"';
+  else{var n=list.filter(function(c){return c.date>last}).length;h.textContent=n?('มี '+n+' รายการใหม่ตั้งแต่คุณเข้ามาเมื่อ '+thDate(last)):('ไม่มีรายการใหม่ตั้งแต่คุณเข้ามาเมื่อ '+thDate(last)+' · ตรวจล่าสุด '+thDate(D.meta.checked));}
+  more.addEventListener('click',function(){expanded=!expanded;draw()});
+  try{var t=new Date();localStorage.setItem('radar-last-visit',t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'))}catch(e){}
+})();
+
+/* tabs */
+var tabBtns=document.querySelectorAll('.tabs button');
+function showTab(id){
+  tabBtns.forEach(function(b){b.setAttribute('aria-selected',b.getAttribute('data-t')===id?'true':'false')});
+  document.querySelectorAll('.tabp').forEach(function(p){p.hidden=(p.id!=='p-'+id)});
+  try{localStorage.setItem('radar-tab',id)}catch(e){}
+}
+tabBtns.forEach(function(b){b.addEventListener('click',function(){showTab(b.getAttribute('data-t'))})});
+(function(){var h=(location.hash||'').slice(1),t=null;try{t=localStorage.getItem('radar-tab')}catch(e){}
+  var ok=['year','cats','where','region','cal','profit'];if(ok.indexOf(h)>-1)showTab(h);else if(ok.indexOf(t)>-1)showTab(t);})();
+
+/* YEAR tab */
+(function(){
+  var M=D.market,cats=D.categories;
+  var mh=M.monthly,last=mh[mh.length-1];
+  var fastest=cats.slice().sort(function(a,b){return b.m26-a.m26})[0];
+  var accel=cats.filter(function(c){return c.trend==='up'});
+  var slow=cats.filter(function(c){return c.trend==='down'});
+  document.getElementById('tiles').innerHTML=
+   '<div class="tile"><div class="k">ตลาดอีคอมเมิร์ซไทย ปี 2025 (ECDB)</div><div class="v">'+bigBaht(thbM(M.ecdbRev25))+'</div><div class="n">US$'+fmt(M.ecdbRev25/1000,1)+' พันล้าน · คาดโต '+rng(M.ecdbG26)+' ในปี 2026</div></div>'+
+   '<div class="tile"><div class="k">ยอดขายรวมเดือน '+thMonth(last.m)+'</div><div class="v">'+bigBaht(thbM(last.v))+'</div><div class="n">US$'+fmt(last.v)+'m · ต่ำกว่าเดือนก่อนเล็กน้อย</div></div>'+
+   '<div class="tile"><div class="k">หมวดที่คาดว่าโตเร็วสุดปี 2026</div><div class="v">'+esc(fastest.th)+'</div><div class="n">คาดโต '+rng(fastest.g26)+' · ตามด้วยเครื่องดื่ม</div></div>'+
+   '<div class="tile"><div class="k">หมวดที่กำลังชะลอ</div><div class="v">'+slow.length+' หมวด</div><div class="n">'+slow.map(function(c){return c.th}).join(' · ')+'</div></div>';
+
+  document.getElementById('mktsrc').innerHTML=
+   '<div class="sbx"><div class="big">'+bigBaht(thbM(M.ecdbRev25))+'</div>ECDB ตลาดออนไลน์รวม ปี 2025 โต '+rng(M.ecdbG25)+' คาดปี 2026 โต '+rng(M.ecdbG26)+'</div>'+
+   '<div class="sbx"><div class="big">'+esc(M.pricezaThb25)+'</div>Priceza ปี 2025 · คาดปี 2026 '+esc(M.pricezaG26)+' (เม.ย. 2026)</div>'+
+   '<div class="sbx"><div class="big">'+esc(M.mwPlatformThb25)+'</div>Momentum Works นับเฉพาะยอดซื้อขายบน Shopee TikTok Shop Lazada ปี 2025 ไทยโตเร็วสุดในอาเซียน</div>';
+
+  var view='size';
+  var bars=document.getElementById('ybars'),lg=document.getElementById('ylegend'),hint=document.getElementById('yhint');
+  function draw(){
+    var rows=cats.slice().sort(function(a,b){return view==='size'?b.e27-a.e27:b.m26-a.m26});
+    var max=view==='size'?Math.max.apply(null,rows.map(function(c){return thbM(c.e27)})):Math.max.apply(null,rows.map(function(c){return Math.max(c.g25[1],c.g26[1])}));
+    if(view==='size'){
+      hint.textContent='แท่งเข้มคือปี 2025 จริง ส่วนอ่อนต่อท้ายคือที่คาดว่าจะเพิ่มถึงปี 2027 ตัวเลขด้านขวาคือประมาณการปี 2027';
+      lg.innerHTML='<span><i style="background:var(--accent)"></i>ปี 2025 (ECDB)</span><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>เพิ่มถึงปี 2027 (ประมาณการ)</span>';
+      bars.innerHTML=rows.map(function(c){
+        var a=thbM(c.rev),b=thbM(c.e27);
+        return '<div class="row" title="2025: '+fmt(a)+' ล้านบาท · 2026 คาด: '+fmt(thbM(c.e26))+' · 2027 ประมาณ: '+fmt(b)+'"><div class="name">'+esc(c.th)+'</div><div class="track"><div class="fill b" style="width:'+(b/max*100)+'%"></div><div class="fill" style="position:relative;width:'+(a/max*100)+'%"></div></div><div class="val">'+fmt(b/1000,1)+' พันล.</div></div>';
+      }).join('');
+    }else{
+      hint.textContent='แท่งจางคืออัตราโตปี 2025 แท่งเข้มคือที่คาดปี 2026 (ค่ากลางของช่วง) ถ้าแท่งเข้มสั้นกว่าแปลว่าชะลอลง';
+      lg.innerHTML='<span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>ปี 2025</span><span><i style="background:var(--accent)"></i>คาดปี 2026</span>';
+      bars.innerHTML=rows.map(function(c){
+        var p=c.trend==='up'?'<span class="pill up">เร่ง</span>':c.trend==='down'?'<span class="pill down">ชะลอ</span>':'';
+        return '<div class="row"><div class="name">'+esc(c.th)+' '+p+'</div><div class="track"><div class="fill b" style="width:'+(c.m25/max*100)+'%"></div><div class="fill" style="position:relative;height:50%;margin-top:5px;width:'+(c.m26/max*100)+'%"></div></div><div class="val">'+rng(c.g26)+'</div></div>';
+      }).join('');
+    }
+  }
+  document.querySelectorAll('[data-v]').forEach(function(b){b.addEventListener('click',function(){
+    view=b.getAttribute('data-v');document.querySelectorAll('[data-v]').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});draw();})});
+  draw();
+
+  var big3=cats.slice().sort(function(a,b){return (b.e26-b.rev)-(a.e26-a.rev)}).slice(0,3);
+  document.getElementById('thisyear').innerHTML=[
+   'ตลาดยังโต แต่ช้ากว่าปีที่แล้ว ECDB คาด '+rng(M.ecdbG26)+' ส่วน Priceza คาดเพียง 5–6% เพราะเศรษฐกิจชะลอ คนย้ายไปซื้อของจำเป็นออนไลน์แทนการออกไปห้าง',
+   'เงินเพิ่มมากสุดเป็นบาทอยู่ที่ '+big3.map(function(c){return c.th+' (+'+fmt(thbM(c.e26-c.rev)/1000,1)+' พันล้านบาท)'}).join(' ')+' เพราะฐานใหญ่',
+   'หมวดที่โตเร็วในสัดส่วนคืออาหารและเครื่องดื่ม แต่ยังขายออนไลน์ไม่ถึง 5% ของตลาดทั้งหมด ยังมีที่ว่างให้โตอีกมาก',
+   'TikTok Shop แซง Lazada เป็นอันดับ 2 และค่าธรรมเนียมทุกเจ้าขึ้นต่อเนื่อง ผู้ขายแบบซื้อมาขายไปกำไรบางลง เจ้าของแบรนด์ได้เปรียบกว่า',
+   'ช่วงที่เหลือของปีคือ 11.11 และ 12.12 ซึ่งเป็นยอดขายก้อนใหญ่สุดของปี'
+  ].map(function(t){return '<li>'+t+'</li>'}).join('');
+  var top27=cats.slice().sort(function(a,b){return b.m26-a.m26}).slice(0,5);
+  document.getElementById('nextyear').innerHTML=[
+   'ยังไม่มีแหล่งไหนเปิดตัวเลขคาดการณ์ปี 2027 รายหมวดให้ฟรี ตัวเลขในกราฟเป็นการต่อแนวโน้มปี 2026 ของผมเอง พอมีรายงานใหม่ (เช่น Momentum Works ราวกลางปี) งานอัปเดตจะแทนที่ให้',
+   'ถ้าแนวโน้มคงเดิม หมวดที่น่าจับตาคือ '+top27.map(function(c){return c.th}).join(' ')+' ซึ่งคาดโตตั้งแต่ 10% ขึ้นไป',
+   'หมวดที่เริ่มชะลอ ('+slow.map(function(c){return c.th}).join(' ')+') อาจแข่งกันด้วยราคามากขึ้น',
+   'The Story Thailand คาดว่าการสั่งของผ่านผู้ช่วย AI และการส่งด่วนภายในวันจะเริ่มมีผลกับตลาดชัดเจนในปีหน้า สินค้าที่ข้อมูลครบและส่งไวจะได้เปรียบ',
+   'สัดส่วนที่ขายออนไลน์ของอิเล็กทรอนิกส์ ของเล่น และของใช้ในบ้านคาดว่าจะขยับขึ้นอีกขั้นในปี 2026 สะท้อนว่าคนซื้อหมวดนี้ออนไลน์มากขึ้นเรื่อยๆ'
+  ].map(function(t){return '<li>'+t+'</li>'}).join('');
+})();
+
+/* CATEGORIES tab */
+(function(){
+  var cats=D.categories,tbl=document.getElementById('ctbl');
+  var cols=[
+   {k:'th',t:'หมวด',s:function(c){return c.th}},
+   {k:'rev',t:'ปี 2025 (ล้านบาท)',r:1,s:function(c){return c.rev}},
+   {k:'m26',t:'คาดโต 2026',r:1,s:function(c){return c.m26}},
+   {k:'trend',t:'แนวโน้ม',s:function(c){return c.m26-c.m25}},
+   {k:'sep',t:'ยอดเดือนล่าสุด (ล้านบาท)',r:1,s:function(c){return c.sep}},
+   {k:'on',t:'ขายออนไลน์ 2025→2026',s:function(c){return parseFloat(c.on26)}},
+   {k:'lead',t:'อันดับ 1',s:function(c){return c.stores[0]}}
+  ];
+  var sk='rev',sd=-1,open=null;
+  function detail(c){
+    var mo=c.hist.map(function(h){return thMonth(h.m)+': '+fmt(thbM(h.v))+' ล้านบาท'}).join(' → ');
+    return '<tr class="det"><td colspan="7"><div class="dgrid">'+
+     '<div><h4>ขนาดและการเติบโต</h4><p>ปี 2025: <span class="num">'+fmt(thbM(c.rev))+'</span> ล้านบาท (US$'+fmt(c.rev)+'m)<br>โตปี 2025: '+rng(c.g25)+' · คาดปี 2026: '+rng(c.g26)+'<br>ประมาณปี 2026: <span class="num">'+fmt(thbM(c.e26))+'</span> ล้านบาท<br>ประมาณปี 2027: <span class="num">'+fmt(thbM(c.e27))+'</span> ล้านบาท <span class="pill est">ประมาณของผม</span></p></div>'+
+     '<div><h4>ยอดรายเดือนที่บันทึกไว้</h4><p>'+mo+(c.chg!==null?'<br>เปลี่ยน '+(c.chg>0?'+':'')+c.chg.toFixed(1)+'% ในช่วงนี้':'')+'<br><span class="hint">งานอัปเดตจะเก็บยอดเดือนใหม่เพิ่มทุกเดือน</span></p></div>'+
+     '<div><h4>สินค้าในหมวด</h4><p>'+(c.sub?('หมวดย่อยใหญ่สุด: '+esc(c.sub)+' '+c.subPct+'% ของรายได้หมวด'):'ECDB ไม่เปิดสัดส่วนหมวดย่อยแบบฟรี')+'<br>สัดส่วนที่ขายออนไลน์: '+c.on25+' → '+c.on26+'</p></div>'+
+     '<div><h4>ร้านค้าที่ขายได้มากสุด</h4><ol>'+c.stores.map(function(s){return '<li>'+esc(s)+'</li>'}).join('')+'</ol>'+
+     '<button type="button" class="go" data-calc="'+c.id+'">คิดกำไรสินค้าหมวดนี้</button></div>'+
+     '</div><p class="hint" style="margin-top:10px">ที่มา: <a href="https://ecdb.com/resources/sample-data/market/th/'+c.slug+'" target="_blank" rel="noopener">ECDB '+esc(c.en)+'</a> · ค่าเงิน '+RATE+' บาท/US$</p></td></tr>';
+  }
+  function draw(){
+    var c=cols.filter(function(x){return x.k===sk})[0];
+    var rows=cats.slice().sort(function(a,b){var x=c.s(a),y=c.s(b);return (x>y?1:x<y?-1:0)*sd});
+    var h='<thead><tr>'+cols.map(function(x){var a=x.k===sk?(sd<0?' ▼':' ▲'):'';
+      return '<th class="'+(x.r?'r':'')+'" aria-sort="'+(x.k===sk?(sd<0?'descending':'ascending'):'none')+'"><button type="button" data-k="'+x.k+'">'+x.t+a+'</button></th>'}).join('')+'</tr></thead><tbody>';
+    rows.forEach(function(d){
+      var tr=d.trend==='up'?'<span class="pill up">เร่งขึ้น</span>':d.trend==='down'?'<span class="pill down">ชะลอ</span>':'<span class="pill">คงที่</span>';
+      h+='<tr class="cat" tabindex="0" data-id="'+d.id+'" aria-expanded="'+(open===d.id)+'"><td><b>'+esc(d.th)+'</b><br><span class="hint">'+esc(d.en)+'</span></td>'+
+        '<td class="r num">'+fmt(thbM(d.rev))+'</td><td class="r num">'+rng(d.g26)+'</td><td>'+tr+'<br><span class="hint">2025: '+rng(d.g25)+'</span></td>'+
+        '<td class="r num">'+fmt(thbM(d.sep))+'<br><span class="hint">'+thMonth(d.hist[d.hist.length-1].m)+'</span></td><td>'+d.on25+' → '+d.on26+'</td><td>'+esc(d.stores[0])+'<br><span class="hint">รองลงมา '+esc(d.stores[1])+'</span></td></tr>';
+      if(open===d.id)h+=detail(d);
+    });
+    tbl.innerHTML=h+'</tbody>';
+  }
+  tbl.addEventListener('click',function(e){
+    var b=e.target.closest('th button');
+    if(b){var k=b.getAttribute('data-k');if(k===sk)sd=-sd;else{sk=k;sd=(k==='th'||k==='lead')?1:-1}draw();return}
+    var g=e.target.closest('[data-calc]');if(g){window.radarCalcFor&&window.radarCalcFor(g.getAttribute('data-calc'));return}
+    if(e.target.closest('a'))return;
+    var r=e.target.closest('tr.cat');if(r){var id=r.getAttribute('data-id');open=open===id?null:id;draw();}
+  });
+  tbl.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches('tr.cat')){e.preventDefault();var id=e.target.getAttribute('data-id');open=open===id?null:id;draw();var n=tbl.querySelector('tr.cat[data-id="'+id+'"]');n&&n.focus();}});
+  draw();
+})();
+
+/* WHERE tab */
+(function(){
+  var P=D.platforms;
+  document.getElementById('revline').textContent=P.revenue;
+  document.getElementById('shares').innerHTML=P.share.map(function(s){
+    var tot=s.sp+s.tt+s.lz;
+    return '<div><div class="lab">'+esc(s.label)+(tot!==100?' <span class="hint">(รวม '+tot+'% ตามแหล่งข้อมูล)</span>':'')+'</div><div class="stack" role="img" aria-label="Shopee '+s.sp+'% TikTok Shop '+s.tt+'% Lazada '+s.lz+'%">'+
+     '<span style="width:'+(s.sp/tot*100)+'%;background:var(--sp)">Shopee '+s.sp+'%</span><span style="width:'+(s.tt/tot*100)+'%;background:var(--tt)">TikTok '+s.tt+'%</span><span style="width:'+(s.lz/tot*100)+'%;background:var(--lz)">Lazada '+s.lz+'%</span></div></div>';
+  }).join('');
+  var groups={'Shopee':[],'TikTok Shop':[],'Lazada':[]};
+  D.categories.forEach(function(c){
+    if(groups[c.stores[0]])groups[c.stores[0]].push(c.th+' (อันดับ 1)');
+    if(groups[c.stores[1]])groups[c.stores[1]].push(c.th+' (อันดับ 2)');
+  });
+  var notes={
+   'Shopee':['ขายได้กว้างที่สุด','ครองอันดับ 1 เกือบทุกหมวด เหมาะกับสินค้าที่คนค้นหาเอง เช่น ของใช้ในบ้าน อิเล็กทรอนิกส์ สัตว์เลี้ยง แต่ค่าคอมสูงและขึ้นแล้ว 3 รอบในปีนี้ ควรคิดกำไรรายชิ้นก่อนเข้าแคมเปญ','up'],
+   'TikTok Shop':['โตเร็วที่สุด','นำหมวดกระเป๋าและเครื่องประดับ และเป็นอันดับ 2 ในแฟชั่น ความงาม ของใช้ในบ้าน ของเล่น กีฬา เครื่องดื่ม เหมาะกับสินค้าที่โชว์ในคลิปหรือไลฟ์ได้ ข้อสังเกตของผม: ต้องลงแรงทำคอนเทนต์ และค่าธรรมเนียมรวม Growth Fee แล้วไม่ได้ถูกกว่ามาก','up'],
+   'Lazada':['ยังแข็งในบางหมวด','เป็นอันดับ 2 ในอิเล็กทรอนิกส์ อาหาร รองเท้า สัตว์เลี้ยง และสวน และเน้นสินค้าแบรนด์ที่ราคาต่อออเดอร์สูงขึ้น ส่วนแบ่งรวมลดลงจนอยู่อันดับ 3 เหมาะกับร้านที่มีแบรนด์หรือขาย LazMall','flat']
+  };
+  document.getElementById('fit').innerHTML=Object.keys(groups).map(function(p){
+    var n=notes[p];
+    return '<div class="card"><h3>'+p+' <span class="pill '+n[2]+'">'+n[0]+'</span></h3><p>'+n[1]+'</p><div class="items">'+groups[p].map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div><p class="src">ที่มา: ECDB, Momentum Works</p></div>';
+  }).join('');
+  document.getElementById('ftbl').innerHTML='<thead><tr><th>แพลตฟอร์ม</th><th>มีผลตั้งแต่</th><th>ค่าคอมมิชชัน</th><th>ค่าชำระเงิน</th><th>ค่าอื่นๆ</th><th>หมายเหตุ</th></tr></thead><tbody>'+
+   P.fees.map(function(f){return '<tr><td><b>'+f.p+'</b></td><td>'+f.eff+'</td><td>'+f.comm+'</td><td>'+f.pay+'</td><td>'+f.other+'</td><td>'+f.note+'</td></tr>'}).join('')+'</tbody>';
+})();
+
+/* REGION tab */
+(function(){
+  document.getElementById('regions').innerHTML=D.regions.map(function(r){
+    var it='';
+    if(r.items){it=Object.keys(r.items).map(function(p){return '<p style="font-size:13px"><b>'+p+'</b></p><div class="items">'+r.items[p].map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'}).join('');}
+    return '<div class="card"><h3>'+esc(r.prov)+' <span class="pill">'+esc(r.region)+'</span> <span class="pill flat">'+esc(r.month)+'</span></h3>'+it+'<p>'+esc(r.note)+'</p><p class="src"><a href="'+r.url+'" target="_blank" rel="noopener">เปิดประกาศของสำนักงานพาณิชย์จังหวัด</a></p></div>';
+  }).join('');
+})();
+
+/* CALENDAR tab */
+(function(){
+  var ev=D.events.map(function(e){return {d:pd(e.d),end:e.end?pd(e.end):null,t:e.t,x:e.x,s:e.s,auto:false}});
+  var lim=new Date(today);lim.setDate(lim.getDate()+90);
+  var seen={};ev.forEach(function(e){seen[e.d.toDateString()]=1});
+  for(var i=0;i<4;i++){
+    var y=today.getFullYear(),m=today.getMonth()+i;var dd=new Date(y,m,1);y=dd.getFullYear();m=dd.getMonth();
+    var dbl=new Date(y,m,m+1);
+    if(!seen[dbl.toDateString()])ev.push({d:dbl,t:(m+1)+'.'+(m+1),x:'แคมเปญวันเลขคู่ประจำเดือน แพลตฟอร์มจัดเกือบทุกเดือน แต่ยังไม่มีประกาศรายละเอียด',s:'คำนวณจากรูปแบบแคมเปญ',auto:true});
+    ev.push({d:new Date(y,m,25),t:'เงินเดือนออก',x:'ช่วงวันที่ 25 ถึงต้นเดือนถัดไป คนมีกำลังซื้อ แพลตฟอร์มมักจัดโปรวันเงินเดือนออก',s:'คำนวณจากรูปแบบแคมเปญ',auto:true});
+  }
+  ev=ev.filter(function(e){var last=e.end||e.d;return last>=today&&e.d<=lim}).sort(function(a,b){return a.d-b.d});
+  document.getElementById('cal').innerHTML=ev.map(function(e){
+    var diff=Math.round((e.d-today)/86400000);
+    var tag=diff<=0?'<span class="pill up">'+(e.end?'กำลังจัด':'วันนี้')+'</span>':'<span class="pill '+(diff<=30?'up':'')+'">อีก '+diff+' วัน</span>';
+    var dt=e.d.getDate()+(e.end?'–'+e.end.getDate():'')+' '+TM[e.d.getMonth()];
+    return '<div class="ev'+(e.auto?' auto':'')+'"><div class="d">'+dt+'<small>'+(e.d.getFullYear()+543)+'</small></div><div><h3>'+esc(e.t)+'</h3><p>'+esc(e.x)+'</p><p class="src">'+esc(e.s)+'</p></div><div>'+tag+'</div></div>';
+  }).join('');
+})();
+
+/* PROFIT tab */
+(function(){
+  var PLAT=[
+   {k:'tt',n:'TikTok Shop',comm:11.77,extra:8.03,cap:199,pay:3.21,per:1.07},
+   {k:'sp',n:'Shopee',comm:17.12,extra:0,cap:0,pay:3.21,per:1.07},
+   {k:'lz',n:'Lazada',comm:17.12,extra:0,cap:0,pay:3.21,per:0}
+  ];
+  var feeEl=document.getElementById('fee');
+  var h='<thead><tr><th>แพลตฟอร์ม</th><th class="r">คอมมิชชัน %</th><th class="r">ค่าเพิ่ม %</th><th class="r">เพดานค่าเพิ่ม (บาท)</th><th class="r">ค่าชำระเงิน %</th><th class="r">ต่อออเดอร์ (บาท)</th><th class="r">ค่าธรรมเนียมรวม</th><th class="r">กำไรต่อชิ้น</th><th class="r">กำไร %</th><th class="r">ราคาที่ต้องตั้ง</th></tr></thead><tbody>';
+  PLAT.forEach(function(p){
+    h+='<tr><td><b>'+p.n+'</b></td>';
+    ['comm','extra','cap','pay','per'].forEach(function(f){h+='<td class="r"><input type="number" inputmode="decimal" min="0" step="0.01" id="fee-'+p.k+'-'+f+'" aria-label="'+p.n+' '+f+'" value="'+p[f]+'"></td>'});
+    h+='<td class="r num" id="o-'+p.k+'-fee"></td><td class="r num" id="o-'+p.k+'-net"></td><td class="r num" id="o-'+p.k+'-m"></td><td class="r num" id="o-'+p.k+'-tp"></td></tr>';
+  });
+  feeEl.innerHTML=h+'</tbody>';
+  function num(id){var v=parseFloat(document.getElementById(id).value);return isFinite(v)?v:0}
+  function baht(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+  function calc(){
+    var cost=num('f-cost'),ship=num('f-ship'),ads=num('f-ads')/100,tm=num('f-tm')/100,price=num('f-price');
+    PLAT.forEach(function(p){
+      var c=num('fee-'+p.k+'-comm')/100,ex=num('fee-'+p.k+'-extra')/100,cap=num('fee-'+p.k+'-cap'),pay=num('fee-'+p.k+'-pay')/100,per=num('fee-'+p.k+'-per');
+      function fees(x){var e=x*ex;if(cap>0)e=Math.min(e,cap);return x*(c+pay)+e+per}
+      function net(x){return x-cost-ship-fees(x)-x*ads}
+      var f=fees(price),n=net(price),m=price>0?n/price*100:0,tp='ไม่ถึงเป้า';
+      if(net(1e6)/1e6>=tm){var lo=0,hi=1e6;for(var i=0;i<60;i++){var mid=(lo+hi)/2;if(mid>0&&net(mid)/mid>=tm)hi=mid;else lo=mid}tp=baht(hi)}
+      document.getElementById('o-'+p.k+'-fee').textContent=baht(f);
+      var ne=document.getElementById('o-'+p.k+'-net');ne.textContent=baht(n);ne.className='r num '+(n<0?'neg':'pos');
+      var me=document.getElementById('o-'+p.k+'-m');me.textContent=m.toFixed(1)+'%';me.className='r num '+(m<0?'neg':'pos');
+      document.getElementById('o-'+p.k+'-tp').textContent=tp;
+    });
+  }
+  document.querySelectorAll('.calc input').forEach(function(i){i.addEventListener('input',calc)});
+  window.radarCalcFor=function(){showTab('profit');document.getElementById('f-price').focus();};
+  calc();
+})();
+})();
+</script>
+
+</body>
+</html>
