@@ -1,0 +1,8 @@
+# ห้ามขึ้น git: รหัส/ข้อมูลส่วนตัว
+secrets/
+*.env
+.env*
+*.kdbx
+*credential*
+*password*
+logs/
